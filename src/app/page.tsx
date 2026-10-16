@@ -1,69 +1,135 @@
-import Image from "next/image";
+import React from "react";
+import { TopHeader } from "@/components/layout/TopHeader";
+import { Navbar } from "@/components/layout/Navbar";
+import { MobileHeader } from "@/components/layout/MobileHeader";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { Footer } from "@/components/layout/Footer";
+import { OrderHero } from "@/components/order/OrderHero";
+import { OrderStepper } from "@/components/order/OrderStepper";
+import { OrderDetailsGrid } from "@/components/order/OrderDetailsGrid";
+import { AccountPromoBanner } from "@/components/order/AccountPromoBanner";
+import { OrderSummaryCard } from "@/components/summary/OrderSummaryCard";
+import { TrustBadges } from "@/components/summary/TrustBadges";
+import { RecommendedProducts } from "@/components/recommendations/RecommendedProducts";
+import { FeedbackSection } from "@/components/feedback/FeedbackSection";
+import { initialOrderData, recommendedProducts, trustBadges } from "@/data/mockData";
+import { OrderDetails } from "@/types/order";
+import { Product, TrustBadgeItem } from "@/types/product";
 
-export default function Home() {
+async function getOrderData(): Promise<{
+  order: OrderDetails;
+  recommendations: Product[];
+  trustBadges: TrustBadgeItem[];
+}> {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const [orderRes, recsRes] = await Promise.all([
+      fetch(`${baseUrl}/api/order`, { next: { revalidate: 60 } }),
+      fetch(`${baseUrl}/api/recommendations`, { next: { revalidate: 60 } }),
+    ]);
+
+    if (orderRes.ok && recsRes.ok) {
+      const orderJson = await orderRes.json();
+      const recsJson = await recsRes.json();
+      return {
+        order: orderJson.data || initialOrderData,
+        recommendations: recsJson.recommendations || recommendedProducts,
+        trustBadges: recsJson.trustBadges || trustBadges,
+      };
+    }
+  } catch {
+    // Fallback gracefully during static build or offline mode
+  }
+
+  return {
+    order: initialOrderData,
+    recommendations: recommendedProducts,
+    trustBadges: trustBadges,
+  };
+}
+
+export default async function OrderConfirmationPage() {
+  const { order, recommendations, trustBadges: badges } = await getOrderData();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5]">
+      {/* Top micro-bar for desktop */}
+      <TopHeader />
+
+      {/* Main navigation header */}
+      <Navbar />
+      <MobileHeader />
+
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-12 pb-16">
+        {/* Order Hero Section */}
+        <OrderHero
+          orderId={order.orderId}
+          email={order.email}
+          expectedDelivery={order.expectedDelivery}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+
+        {/* Order Stepper Tracker */}
+        <OrderStepper
+          steps={order.steps}
+          statusNotice={order.statusMessage}
+        />
+
+        {/* Two-Column Responsive Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+          {/* Left Column (Desktop 7 cols): Delivery/Payment Grid & Account Banner */}
+          <div className="lg:col-span-7 flex flex-col gap-6 order-1">
+            <OrderDetailsGrid
+              address={order.deliveryAddress}
+              deliveryMethod={order.deliveryMethod}
+              payment={order.payment}
+              email={order.email}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+            {/* Desktop Account Banner */}
+            <div className="hidden lg:block">
+              <AccountPromoBanner />
+            </div>
+          </div>
+
+          {/* Right Column (Desktop 5 cols): Order Summary & Trust Badges */}
+          <div className="lg:col-span-5 order-2 lg:order-2 flex flex-col">
+            <OrderSummaryCard
+              items={order.items}
+              subtotal={order.subtotal}
+              deliveryFee={order.deliveryFee}
+              estimatedTaxes={order.estimatedTaxes}
+              total={order.total}
+              currency={order.currency}
+              trustBadges={badges}
+            />
+
+            {/* Tablet & Mobile Trust Badges row (under Order Summary) */}
+            <div className="lg:hidden mt-2">
+              <TrustBadges badges={badges} variant="inline" />
+            </div>
+          </div>
+
+          {/* Mobile / Tablet Account Banner (placed below order summary as shown in 768px & 375px) */}
+          <div className="lg:hidden col-span-1 order-3 mt-4">
+            <AccountPromoBanner />
+          </div>
+        </div>
+
+        {/* Recommendations Section: You May Also Like */}
+        <RecommendedProducts products={recommendations} />
+
+        {/* Feedback & Newsletter Section (Desktop only as shown in PDF) */}
+        <div className="hidden lg:block">
+          <FeedbackSection />
         </div>
       </main>
+
+      {/* Multi-column Footer */}
+      <Footer />
+
+      {/* Mobile Sticky Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 }
