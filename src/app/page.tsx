@@ -20,38 +20,10 @@ import {
 import { OrderDetails } from "@/types/order";
 import { Product, TrustBadgeItem } from "@/types/product";
 
-async function getOrderData(): Promise<{
-  order: OrderDetails;
-  recommendations: Product[];
-  trustBadges: TrustBadgeItem[];
-}> {
-  let recs = recommendedProducts;
-
-  try {
-    const res = await fetch(
-      "https://fakestoreapi.com/products/category/jewelery",
-      { next: { revalidate: 3600 } }
-    );
-    if (res.ok) {
-      const items: { image: string }[] = await res.json();
-      recs = recommendedProducts.map((product, i) => ({
-        ...product,
-        image: items[i % items.length]?.image ?? product.image,
-      }));
-    }
-  } catch {
-    // API işləməsə və ya build zamanı internet olmasa mock məhsullar qalır
-  }
-
-  return {
-    order: initialOrderData,
-    recommendations: recs,
-    trustBadges: trustBadges,
-  };
-}
-
-export default async function OrderConfirmationPage() {
-  const { order, recommendations, trustBadges: badges } = await getOrderData();
+export default function OrderConfirmationPage() {
+  const order = initialOrderData;
+  const recommendations = recommendedProducts;
+  const badges = trustBadges;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5]">
