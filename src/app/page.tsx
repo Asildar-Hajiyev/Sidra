@@ -12,7 +12,11 @@ import { OrderSummaryCard } from "@/components/summary/OrderSummaryCard";
 import { TrustBadges } from "@/components/summary/TrustBadges";
 import { RecommendedProducts } from "@/components/recommendations/RecommendedProducts";
 import { FeedbackSection } from "@/components/feedback/FeedbackSection";
-import { initialOrderData, recommendedProducts, trustBadges } from "@/data/mockData";
+import {
+  initialOrderData,
+  recommendedProducts,
+  trustBadges,
+} from "@/data/mockData";
 import { OrderDetails } from "@/types/order";
 import { Product, TrustBadgeItem } from "@/types/product";
 
@@ -38,7 +42,7 @@ async function getOrderData(): Promise<{
       };
     }
   } catch {
-    // Fallback gracefully during static build or offline mode
+    // Statik build zamanı və ya oflayn rejimdə mock datalara qayıt
   }
 
   return {
@@ -53,82 +57,84 @@ export default async function OrderConfirmationPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5]">
-      {/* Top micro-bar for desktop */}
+      {/* Desktop üçün üst mikro-panel */}
       <TopHeader />
 
-      {/* Main navigation header */}
+      {/* Əsas naviqasiya başlığı */}
       <Navbar />
       <MobileHeader />
 
-      {/* Main Content Area */}
+      {/* Əsas məzmun sahəsi */}
       <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-12 pb-16">
-        {/* Order Hero Section */}
+        {/* Sifariş qarşılama (Hero) bölməsi */}
         <OrderHero
           orderId={order.orderId}
           email={order.email}
           expectedDelivery={order.expectedDelivery}
         />
 
-        {/* Order Stepper Tracker */}
-        <OrderStepper
-          steps={order.steps}
-          statusNotice={order.statusMessage}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 lg:items-stretch">
+          {/* Sol sütun: Stepper + Details + Banner */}
+          <div className="contents lg:flex lg:flex-col lg:gap-6 lg:col-span-7 lg:col-start-1 lg:row-start-1">
+            {/* Sifariş izləmə addımları */}
+            <div className="order-1 lg:order-none">
+              <OrderStepper
+                steps={order.steps}
+                statusNotice={order.statusMessage}
+              />
+            </div>
 
-        {/* Two-Column Responsive Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* Left Column (Desktop 7 cols): Delivery/Payment Grid & Account Banner */}
-          <div className="lg:col-span-7 flex flex-col gap-6 order-1">
-            <OrderDetailsGrid
-              address={order.deliveryAddress}
-              deliveryMethod={order.deliveryMethod}
-              payment={order.payment}
-              email={order.email}
-            />
+            {/* Çatdırılma və ödəniş məlumatları */}
+            <div className="order-2 lg:order-none">
+              <OrderDetailsGrid
+                address={order.deliveryAddress}
+                deliveryMethod={order.deliveryMethod}
+                payment={order.payment}
+                email={order.email}
+              />
+            </div>
 
-            {/* Desktop Account Banner */}
-            <div className="hidden lg:block">
+            {/* Hesab təklifi bannerı: qalan boşluğu doldurur ki, sol sütun sağın hündürlüyünə çatsın */}
+            <div className="order-4 lg:order-none lg:flex-1 [&>*]:h-full">
               <AccountPromoBanner />
             </div>
           </div>
 
-          {/* Right Column (Desktop 5 cols): Order Summary & Trust Badges */}
-          <div className="lg:col-span-5 order-2 lg:order-2 flex flex-col">
-            <OrderSummaryCard
-              items={order.items}
-              subtotal={order.subtotal}
-              deliveryFee={order.deliveryFee}
-              estimatedTaxes={order.estimatedTaxes}
-              total={order.total}
-              currency={order.currency}
-              trustBadges={badges}
-            />
+          {/* Sağ sütun: Sifariş xülasəsi sütunun tam hündürlüyünü tutur */}
+          <div className="mt-6 lg:mt-0 order-3 lg:order-none flex flex-col gap-2 lg:col-span-5 lg:col-start-8 lg:row-start-1">
+            {/* Sifariş xülasəsi kartı */}
+            <div className="lg:flex-1 [&>*]:h-full">
+              <OrderSummaryCard
+                items={order.items}
+                subtotal={order.subtotal}
+                deliveryFee={order.deliveryFee}
+                estimatedTaxes={order.estimatedTaxes}
+                total={order.total}
+                currency={order.currency}
+                trustBadges={badges}
+              />
+            </div>
 
-            {/* Tablet & Mobile Trust Badges row (under Order Summary) */}
-            <div className="lg:hidden mt-2">
+            {/* Tablet və mobil üçün etibar nişanları (xülasənin altında) */}
+            <div className="lg:hidden">
               <TrustBadges badges={badges} variant="inline" />
             </div>
           </div>
-
-          {/* Mobile / Tablet Account Banner (placed below order summary as shown in 768px & 375px) */}
-          <div className="lg:hidden col-span-1 order-3 mt-4">
-            <AccountPromoBanner />
-          </div>
         </div>
 
-        {/* Recommendations Section: You May Also Like */}
+        {/* Tövsiyə bölməsi: "Bunlar da xoşunuza gələ bilər" */}
         <RecommendedProducts products={recommendations} />
 
-        {/* Feedback & Newsletter Section (Desktop only as shown in PDF) */}
+        {/* Rəy və xəbər bülleteni bölməsi (yalnız desktopda göstərilir) */}
         <div className="hidden lg:block">
           <FeedbackSection />
         </div>
       </main>
 
-      {/* Multi-column Footer */}
+      {/* Çoxsütunlu footer */}
       <Footer />
 
-      {/* Mobile Sticky Bottom Navigation */}
+      {/* Mobil üçün yapışqan alt naviqasiya */}
       <MobileBottomNav />
     </div>
   );

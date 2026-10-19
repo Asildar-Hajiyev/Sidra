@@ -18,13 +18,14 @@ export const OrderHero: React.FC<OrderHeroProps> = ({
     <section className="bg-[#FAF8F5] pt-6 md:pt-10 pb-4">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
         {/* Left Side: Order Confirmation Content */}
-        <div className="lg:col-span-7 flex flex-col justify-center">
+        <div className="lg:col-span-7 lg:flex gap-8 ">
           {/* Checkmark icon */}
-          <div className="w-11 h-11 rounded-full bg-[#EFE9DF] border border-[#DFD7CA] flex items-center justify-center text-[#5C5346] mb-5 shadow-xs">
-            <Check className="w-5 h-5 stroke-[2.5]" />
+          <div className="w-15 h-15 rounded-full bg-[#f6dfd0] border border-[#DFD7CA] flex items-center justify-center text-[#5C5346] mb-5 shadow-xs">
+            <Check className="w-7 h-7 stroke-[2.5] " />
           </div>
 
-          {/* Heading */}
+         <div>
+           {/* Heading */}
           <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#1A1A1A] font-normal tracking-tight leading-[1.2]">
             Thank You,
             <br />
@@ -56,18 +57,19 @@ export const OrderHero: React.FC<OrderHeroProps> = ({
           <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <button
               type="button"
-              className="bg-[#141414] hover:bg-black text-white text-xs sm:text-sm font-medium px-7 py-3 rounded-full transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 group"
+              className="bg-[#141414] hover:bg-black text-white text-xs sm:text-sm font-medium px-7 py-3 rounded-2xl transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 group"
             >
               <span>Track Order</span>
               <span className="group-hover:translate-x-0.5 transition-transform">→</span>
             </button>
             <Link
               href="#shop"
-              className="bg-white hover:bg-[#F5F2EB] text-[#1A1A1A] border border-[#D8D2C5] text-xs sm:text-sm font-medium px-6 py-3 rounded-full transition-all text-center"
+              className="bg-white hover:bg-[#F5F2EB] text-[#1A1A1A] border border-[#D8D2C5] text-xs sm:text-sm font-medium px-6 py-3 rounded-2xl transition-all text-center"
             >
               Continue Shopping
             </Link>
           </div>
+         </div>
         </div>
 
         {/* Right Side: Desktop Promo Image */}

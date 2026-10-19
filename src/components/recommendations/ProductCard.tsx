@@ -74,7 +74,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <button
           type="button"
           onClick={handleAddToBag}
-          className="w-full flex items-center justify-center gap-1.5 text-xs font-medium py-2 px-3 rounded-full border border-[#DCD5C9] bg-white hover:bg-[#FAF8F5] text-[#1A1A1A] transition-colors"
+          className="w-full flex items-center justify-center gap-1.5 text-xs font-medium py-2 px-3 rounded-xl border border-[#DCD5C9] bg-white hover:bg-[#FAF8F5] text-[#1A1A1A] transition-colors"
         >
           <ShoppingBag className="w-3.5 h-3.5 stroke-[1.8]" />
           <span>{isAdding ? "Added!" : "Add to Bag"}</span>

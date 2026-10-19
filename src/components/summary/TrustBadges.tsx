@@ -46,7 +46,7 @@ export const TrustBadges: React.FC<TrustBadgesProps> = ({
   }
 
   return (
-    <div className="mt-6 pt-6 border-t border-[#F0EAE1] grid grid-cols-2 gap-4">
+    <div className="mt-6 pt-6 border-t border-[#F0EAE1] flex flex-col gap-4">
       {badges.map((badge) => (
         <div key={badge.id} className="flex items-start gap-2.5">
           <div className="mt-0.5 p-1.5 rounded-full bg-[#F7F5F0] border border-[#EAE4D8] flex-shrink-0">
