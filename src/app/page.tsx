@@ -25,29 +25,27 @@ async function getOrderData(): Promise<{
   recommendations: Product[];
   trustBadges: TrustBadgeItem[];
 }> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-    const [orderRes, recsRes] = await Promise.all([
-      fetch(`${baseUrl}/api/order`, { next: { revalidate: 60 } }),
-      fetch(`${baseUrl}/api/recommendations`, { next: { revalidate: 60 } }),
-    ]);
+  let recs = recommendedProducts;
 
-    if (orderRes.ok && recsRes.ok) {
-      const orderJson = await orderRes.json();
-      const recsJson = await recsRes.json();
-      return {
-        order: orderJson.data || initialOrderData,
-        recommendations: recsJson.recommendations || recommendedProducts,
-        trustBadges: recsJson.trustBadges || trustBadges,
-      };
+  try {
+    const res = await fetch(
+      "https://fakestoreapi.com/products/category/jewelery",
+      { next: { revalidate: 3600 } }
+    );
+    if (res.ok) {
+      const items: { image: string }[] = await res.json();
+      recs = recommendedProducts.map((product, i) => ({
+        ...product,
+        image: items[i % items.length]?.image ?? product.image,
+      }));
     }
   } catch {
-    // Statik build zamanı və ya oflayn rejimdə mock datalara qayıt
+    // API işləməsə və ya build zamanı internet olmasa mock məhsullar qalır
   }
 
   return {
     order: initialOrderData,
-    recommendations: recommendedProducts,
+    recommendations: recs,
     trustBadges: trustBadges,
   };
 }
