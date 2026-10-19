@@ -20,8 +20,8 @@ export const OrderHero: React.FC<OrderHeroProps> = ({
         {/* Left Side: Order Confirmation Content */}
         <div className="lg:col-span-7 lg:flex gap-8 ">
           {/* Checkmark icon */}
-          <div className="w-15 h-15 rounded-full bg-[#f6dfd0] border border-[#DFD7CA] flex items-center justify-center text-[#5C5346] mb-5 shadow-xs">
-            <Check className="w-7 h-7 stroke-[2.5] " />
+          <div className="w-[60px] h-[60px] flex-shrink-0 rounded-full bg-[#f6dfd0] border border-[#DFD7CA] flex items-center justify-center text-[#5C5346] mb-5 shadow-xs">
+            <Check className="w-7 h-7 stroke-[2.5]" />
           </div>
 
          <div>

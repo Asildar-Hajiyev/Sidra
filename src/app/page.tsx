@@ -20,40 +20,10 @@ import {
 import { OrderDetails } from "@/types/order";
 import { Product, TrustBadgeItem } from "@/types/product";
 
-async function getOrderData(): Promise<{
-  order: OrderDetails;
-  recommendations: Product[];
-  trustBadges: TrustBadgeItem[];
-}> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-    const [orderRes, recsRes] = await Promise.all([
-      fetch(`${baseUrl}/api/order`, { next: { revalidate: 60 } }),
-      fetch(`${baseUrl}/api/recommendations`, { next: { revalidate: 60 } }),
-    ]);
-
-    if (orderRes.ok && recsRes.ok) {
-      const orderJson = await orderRes.json();
-      const recsJson = await recsRes.json();
-      return {
-        order: orderJson.data || initialOrderData,
-        recommendations: recsJson.recommendations || recommendedProducts,
-        trustBadges: recsJson.trustBadges || trustBadges,
-      };
-    }
-  } catch {
-    // Statik build zamanı və ya oflayn rejimdə mock datalara qayıt
-  }
-
-  return {
-    order: initialOrderData,
-    recommendations: recommendedProducts,
-    trustBadges: trustBadges,
-  };
-}
-
-export default async function OrderConfirmationPage() {
-  const { order, recommendations, trustBadges: badges } = await getOrderData();
+export default function OrderConfirmationPage() {
+  const order = initialOrderData;
+  const recommendations = recommendedProducts;
+  const badges = trustBadges;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5]">
